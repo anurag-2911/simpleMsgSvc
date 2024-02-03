@@ -1,8 +1,12 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +14,9 @@ type MessageAnalyzer struct {
 }
 
 var msgAnalyzer MessageAnalyzer
-
+type Message struct {
+	Content string `json:"content"`
+}
 func init() {
 	msgAnalyzer = MessageAnalyzer{}
 }
@@ -31,21 +37,40 @@ func pingHandler(c *gin.Context) {
 }
 func messageHandler(c *gin.Context) {
 	log.Println("request on message end point")
-	type Message struct {
-		Content string `json:"content"`
-	}
+	
 	var msg Message
 	if err := c.ShouldBindJSON(&msg); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	analyzedmsg := msgAnalyzer.analyzeMsg(msg.Content)
+	analyzedmsg,err := msgAnalyzer.analyzeMsg(msg.Content)
+	if err!=nil{
+		analyzedmsg="hard coded message"
+	}
 
 	c.JSON(http.StatusOK, analyzedmsg)
 }
 
 
 
-func (msgA *MessageAnalyzer) analyzeMsg(msg string) string {
-	return " Hallo " + "" + msg
+func (msgA *MessageAnalyzer) analyzeMsg(msg string) (string,error) {
+	serviceurl:=os.Getenv("MESSAGE_PROCESSING_SERVICE_URL")
+	if serviceurl==""{
+		serviceurl="http://message-processing-service:8081/process"
+	}
+	requestBody,err:=json.Marshal(Message{Content: msg})
+	if err!=nil{
+		return "",err
+	}
+	resp,err:=http.Post(serviceurl,"application/json",bytes.NewBuffer(requestBody))
+	if err!=nil{
+		return "",err
+	}
+	defer resp.Body.Close()
+	body,err:=io.ReadAll(resp.Body)
+	if err!=nil{
+		return "",err
+	}
+	return string(body),nil
+	
 }
