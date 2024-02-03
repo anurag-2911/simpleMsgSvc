@@ -1,0 +1,11 @@
+replicaCount: 2
+nameOverride: ""
+image:
+  repository: anurag2911/simplemsgsvc
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8080
