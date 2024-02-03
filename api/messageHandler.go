@@ -56,19 +56,23 @@ func messageHandler(c *gin.Context) {
 func (msgA *MessageAnalyzer) analyzeMsg(msg string) (string,error) {
 	serviceurl:=os.Getenv("MESSAGE_PROCESSING_SERVICE_URL")
 	if serviceurl==""{
+		log.Println("service url is empty")
 		serviceurl="http://message-processing-service:8081/process"
 	}
 	requestBody,err:=json.Marshal(Message{Content: msg})
 	if err!=nil{
+		log.Println("marshalling failed",err)
 		return "",err
 	}
 	resp,err:=http.Post(serviceurl,"application/json",bytes.NewBuffer(requestBody))
 	if err!=nil{
+		log.Println("post to http://message-processing-service:8081/process failed ",err)
 		return "",err
 	}
 	defer resp.Body.Close()
 	body,err:=io.ReadAll(resp.Body)
 	if err!=nil{
+		log.Println("can't read the response from http://message-processing-service:8081/process ",err)
 		return "",err
 	}
 	return string(body),nil
