@@ -3,7 +3,7 @@ nameOverride: ""
 image:
   repository: anurag2911/simplemsgsvc
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "01"
 
 service:
   type: LoadBalancer
