@@ -18,6 +18,14 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
+        resources:
+          requests:
+            memory: "64Mi" # Minimum memory allocated to the container
+            cpu: "100m" # Equivalent to 0.10 of a CPU core
+          limits:
+            memory: "128Mi" # Maximum memory the container can use
+            cpu: "200m" # Equivalent to 0.2 of a CPU core
+
         env:  # Set environment variables here
         - name: MESSAGE_PROCESSING_SERVICE_URL
           value: "http://message-processing-service:8081/process"
