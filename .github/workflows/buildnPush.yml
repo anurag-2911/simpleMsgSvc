@@ -35,4 +35,4 @@ jobs:
         tags: anurag2911/simplemsgsvc:15.0  
 
     - name: Verify pushed image
-      run: docker pull anurag2911/simplemsgsvc:15.0
+      run: docker pull anurag2911/simplemsgsvc:15.0 

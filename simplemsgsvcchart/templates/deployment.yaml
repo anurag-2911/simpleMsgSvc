@@ -14,17 +14,16 @@ spec:
     spec:
       containers:
       - name: simplemsgsvc
-        image: anurag2911/simplemsgsvc:04
-        imagePullPolicy: IfNotPresent
+        image: anurag2911/simplemsgsvc:15.0        
         ports:
         - containerPort: 8080
         resources:
           requests:
-            memory: "64Mi" # Minimum memory allocated to the container
-            cpu: "100m" # Equivalent to 0.10 of a CPU core
+            memory: "64Mi"  # Adjust as needed
+            cpu: "50m"     # Adjust as needed
           limits:
-            memory: "128Mi" # Maximum memory the container can use
-            cpu: "200m" # Equivalent to 0.2 of a CPU core
+            memory: "128Mi" # Adjust as needed
+            cpu: "100m"     # Adjust as needed
 
         env:  # Set environment variables here
         - name: MESSAGE_PROCESSING_SERVICE_URL
