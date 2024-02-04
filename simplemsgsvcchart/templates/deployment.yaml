@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "simpleMsgSvc.fullname" . }}
+  name: simplemsgsvc
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 2
   selector:
     matchLabels:
-      app: {{ include "simpleMsgSvc.fullname" . }}
+      app: simplemsgsvc
   template:
     metadata:
       labels:
-        app: {{ include "simpleMsgSvc.fullname" . }}
+        app: simplemsgsvc
     spec:
       containers:
       - name: simplemsgsvc
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: anurag2911/simplemsgsvc:04
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         env:  # Set environment variables here

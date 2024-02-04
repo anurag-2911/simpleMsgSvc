@@ -1,11 +1,11 @@
-replicaCount: 2
-nameOverride: ""
-image:
-  repository: anurag2911/simplemsgsvc
-  pullPolicy: IfNotPresent
-  tag: "02"
+# replicaCount: 2
+# nameOverride: ""
+# image:
+#   repository: anurag2911/simplemsgsvc
+#   pullPolicy: IfNotPresent
+#   tag: "02"
 
-service:
-  type: LoadBalancer
-  port: 80
-  targetPort: 8080
+# service:
+#   type: LoadBalancer
+#   port: 80
+#   targetPort: 8080
