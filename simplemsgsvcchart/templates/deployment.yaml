@@ -27,4 +27,4 @@ spec:
 
         env:  
         - name: MESSAGE_PROCESSING_SERVICE_URL
-          value: "http://message-processing-service:8081/process"
+          value: "http://message-processing-service.default.svc.cluster.local/process"
