@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -54,10 +55,11 @@ func messageHandler(c *gin.Context) {
 
 
 func (msgA *MessageAnalyzer) analyzeMsg(msg string) (string,error) {
+	log.Println("analyzemsg request came")
 	serviceurl:=os.Getenv("MESSAGE_PROCESSING_SERVICE_URL")
 	if serviceurl==""{
 		log.Println("service url is empty")
-		serviceurl="http://message-processing-service:8081/process"
+		return "",fmt.Errorf("error in reading environment variable %v","MESSAGE_PROCESSING_SERVICE_URL")
 	}
 	requestBody,err:=json.Marshal(Message{Content: msg})
 	if err!=nil{
@@ -66,13 +68,13 @@ func (msgA *MessageAnalyzer) analyzeMsg(msg string) (string,error) {
 	}
 	resp,err:=http.Post(serviceurl,"application/json",bytes.NewBuffer(requestBody))
 	if err!=nil{
-		log.Println("post to http://message-processing-service:8081/process failed ",err)
+		log.Printf("post to service %s failed with error %v\n ",serviceurl,err)
 		return "",err
 	}
 	defer resp.Body.Close()
 	body,err:=io.ReadAll(resp.Body)
 	if err!=nil{
-		log.Println("can't read the response from http://message-processing-service:8081/process ",err)
+		log.Printf("can read from service %s with error %v\n ",serviceurl,err)
 		return "",err
 	}
 	return string(body),nil
