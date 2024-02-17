@@ -19,12 +19,12 @@ spec:
         - containerPort: 8080
         resources:
           requests:
-            memory: "64Mi"  # Adjust as needed
-            cpu: "50m"     # Adjust as needed
+            memory: "64Mi"  
+            cpu: "50m"    
           limits:
-            memory: "128Mi" # Adjust as needed
-            cpu: "100m"     # Adjust as needed
+            memory: "128Mi" 
+            cpu: "100m"     
 
-        env:  # Set environment variables here
+        env:  
         - name: MESSAGE_PROCESSING_SERVICE_URL
           value: "http://message-processing-service:8081/process"
