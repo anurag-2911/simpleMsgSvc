@@ -32,7 +32,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: anurag2911/simplemsgsvc:16.0  
+        tags: anurag2911/simplemsgsvc:17.0  
 
     - name: Verify pushed image
-      run: docker pull anurag2911/simplemsgsvc:16.0 
+      run: docker pull anurag2911/simplemsgsvc:17.0 

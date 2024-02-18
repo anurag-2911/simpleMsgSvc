@@ -44,9 +44,9 @@ func messageHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	analyzedmsg,err := msgAnalyzer.analyzeMsg(msg.Content)
+	analyzedmsg,err := msgAnalyzer.analyzeMsg(c,msg.Content)
 	if err!=nil{
-		analyzedmsg="hard coded message"
+		analyzedmsg=fmt.Sprintf("error in /message end point %s",err)
 	}
 
 	c.JSON(http.StatusOK, analyzedmsg)
@@ -54,29 +54,46 @@ func messageHandler(c *gin.Context) {
 
 
 
-func (msgA *MessageAnalyzer) analyzeMsg(msg string) (string,error) {
-	log.Println("analyzemsg request came")
-	serviceurl:=os.Getenv("MESSAGE_PROCESSING_SERVICE_URL")
-	if serviceurl==""{
-		log.Println("service url is empty")
-		return "",fmt.Errorf("error in reading environment variable %v","MESSAGE_PROCESSING_SERVICE_URL")
-	}
-	requestBody,err:=json.Marshal(Message{Content: msg})
-	if err!=nil{
-		log.Println("marshalling failed",err)
-		return "",err
-	}
-	resp,err:=http.Post(serviceurl,"application/json",bytes.NewBuffer(requestBody))
-	if err!=nil{
-		log.Printf("post to service %s failed with error %v\n ",serviceurl,err)
-		return "",err
-	}
-	defer resp.Body.Close()
-	body,err:=io.ReadAll(resp.Body)
-	if err!=nil{
-		log.Printf("can read from service %s with error %v\n ",serviceurl,err)
-		return "",err
-	}
-	return string(body),nil
-	
+func (msgA *MessageAnalyzer) analyzeMsg(c *gin.Context, msg string) (string, error) {
+    serviceURL := os.Getenv("MESSAGE_PROCESSING_SERVICE_URL")
+    if serviceURL == "" {
+        log.Println("service url is empty")
+        return "", fmt.Errorf("error in reading environment variable %v", "MESSAGE_PROCESSING_SERVICE_URL")
+    }
+    requestBody, err := json.Marshal(Message{Content: msg})
+    if err != nil {
+        log.Println("marshalling failed", err)
+        return "", err
+    }
+
+    // Create a new HTTP request
+    req, err := http.NewRequest("POST", serviceURL, bytes.NewBuffer(requestBody))
+    if err != nil {
+        log.Printf("failed to create request to service %s with error %v\n", serviceURL, err)
+        return "", err
+    }
+    req.Header.Set("Content-Type", "application/json")
+
+    // Copy tracing headers
+    for _, h := range []string{"x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context"} {
+        if value := c.GetHeader(h); value != "" {
+            req.Header.Set(h, value)
+        }
+    }
+
+    // Execute the HTTP request
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        log.Printf("post to service %s failed with error %v\n", serviceURL, err)
+        return "", err
+    }
+    defer resp.Body.Close()
+
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        log.Printf("can't read from service %s with error %v\n", serviceURL, err)
+        return "", err
+    }
+    return string(body), nil
 }
+
