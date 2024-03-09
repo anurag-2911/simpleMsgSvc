@@ -3,7 +3,7 @@ name: Go Build and Docker Push
 on:
   push:
     branches:
-      - main  # Set this to your default branch
+      - main  # Set to the default branch
 
 jobs:
   build-and-push:
@@ -32,7 +32,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: anurag2911/simplemsgsvc:17.0  
+        tags: anurag2911/simplemsgsvc:18.0  
 
     - name: Verify pushed image
-      run: docker pull anurag2911/simplemsgsvc:17.0 
+      run: docker pull anurag2911/simplemsgsvc:18.0 

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: simplemsgsvc
-        image: anurag2911/simplemsgsvc:16.0        
+        image: anurag2911/simplemsgsvc:17.0        
         ports:
         - containerPort: 8080
         resources:
